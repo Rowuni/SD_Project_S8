@@ -1,0 +1,40 @@
+---
+title: Sequence Diagram 2 — Cancel an Appointment
+---
+sequenceDiagram
+    actor Requester as Patient / Doctor
+    participant AppointmentController
+    participant AppointmentScheduler
+    participant Appointment
+    participant AvailabilityService
+    participant NotificationDispatcher
+    participant NotificationFactory
+    participant SmsNotificationChannel
+    participant InAppNotificationChannel
+
+    Requester->>AppointmentController: DELETE /appointments/{id}
+    AppointmentController->>AppointmentScheduler: cancelAppointment(id)
+
+    AppointmentScheduler->>Appointment: load(id)
+    Appointment-->>AppointmentScheduler: appointment (CONFIRMED)
+
+    AppointmentScheduler->>Appointment: cancel()
+    Appointment->>Appointment: state.cancel(this)
+    Note over Appointment: state → CancelledState
+
+    Appointment->>NotificationDispatcher: onAppointmentEvent(CANCELLED, appointment)
+
+    NotificationDispatcher->>NotificationFactory: createCancellationNotification(appointment)
+    NotificationFactory-->>NotificationDispatcher: notification
+
+    NotificationDispatcher->>SmsNotificationChannel: send(patient, notification)
+    SmsNotificationChannel-->>NotificationDispatcher: ok
+
+    NotificationDispatcher->>InAppNotificationChannel: send(doctor, notification)
+    InAppNotificationChannel-->>NotificationDispatcher: ok
+
+    AppointmentScheduler->>AvailabilityService: releaseSlot(doctor, slot)
+    AvailabilityService-->>AppointmentScheduler: slot released
+
+    AppointmentScheduler-->>AppointmentController: void
+    AppointmentController-->>Requester: 200 OK — Appointment cancelled

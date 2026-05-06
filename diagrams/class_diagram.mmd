@@ -1,0 +1,365 @@
+---
+title: Healthcare Appointment Management System — Class Diagram
+---
+classDiagram
+
+    %% ═══════════════════════════════════════
+    %% DOMAIN — Users
+    %% ═══════════════════════════════════════
+    class User {
+        <<abstract>>
+        - id: String
+        - name: String
+        - email: String
+        - passwordHash: String
+        - role: UserRole
+        + updateProfile(data: ProfileData): void
+        + getRole(): UserRole
+    }
+
+    class Patient {
+        - dateOfBirth: LocalDate
+        - medicalRecordNumber: String
+        + requestAppointment(service, doctor, slot): Appointment
+        + cancelAppointment(appointmentId: String): void
+        + viewAppointmentHistory(): List~Appointment~
+    }
+
+    class Doctor {
+        - speciality: String
+        - licenseNumber: String
+        + defineAvailability(slot: TimeSlot): void
+        + blockPeriod(start: LocalDateTime, end: LocalDateTime): void
+        + viewSchedule(view: ScheduleView): List~Appointment~
+    }
+
+    class Administrator {
+        + manageUsers(): void
+        + manageClinics(): void
+        + manageServices(): void
+        + configureSystem(): void
+    }
+
+    class UserRole {
+        <<enumeration>>
+        PATIENT
+        DOCTOR
+        ADMINISTRATOR
+    }
+
+    User <|-- Patient
+    User <|-- Doctor
+    User <|-- Administrator
+    User --> UserRole
+
+    %% ═══════════════════════════════════════
+    %% DOMAIN — Clinic & Services
+    %% ═══════════════════════════════════════
+    class Clinic {
+        - id: String
+        - name: String
+        - address: String
+        - specialities: List~String~
+        + getServices(): List~MedicalService~
+        + addService(service: MedicalService): void
+    }
+
+    class MedicalService {
+        - id: String
+        - name: String
+        - description: String
+        - speciality: String
+        - durationMinutes: int
+        - baseFee: double
+        + getAssignedDoctors(): List~Doctor~
+    }
+
+    Clinic "1" *-- "many" MedicalService
+    MedicalService "many" --> "many" Doctor
+
+    %% ═══════════════════════════════════════
+    %% DOMAIN — Appointment & State (State Pattern)
+    %% ═══════════════════════════════════════
+    class Appointment {
+        - id: String
+        - patient: Patient
+        - doctor: Doctor
+        - service: MedicalService
+        - slot: TimeSlot
+        - state: AppointmentState
+        - observers: List~AppointmentObserver~
+        + confirm(): void
+        + cancel(): void
+        + complete(): void
+        + subscribe(observer: AppointmentObserver): void
+        + unsubscribe(observer: AppointmentObserver): void
+        - notifyObservers(event: AppointmentEvent): void
+    }
+
+    class AppointmentState {
+        <<interface>>
+        + confirm(appt: Appointment): void
+        + cancel(appt: Appointment): void
+        + complete(appt: Appointment): void
+        + getStateName(): String
+    }
+
+    class ScheduledState {
+        + confirm(appt: Appointment): void
+        + cancel(appt: Appointment): void
+        + complete(appt: Appointment): void
+        + getStateName(): String
+    }
+
+    class ConfirmedState {
+        + confirm(appt: Appointment): void
+        + cancel(appt: Appointment): void
+        + complete(appt: Appointment): void
+        + getStateName(): String
+    }
+
+    class CompletedState {
+        + confirm(appt: Appointment): void
+        + cancel(appt: Appointment): void
+        + complete(appt: Appointment): void
+        + getStateName(): String
+    }
+
+    class CancelledState {
+        + confirm(appt: Appointment): void
+        + cancel(appt: Appointment): void
+        + complete(appt: Appointment): void
+        + getStateName(): String
+    }
+
+    AppointmentState <|.. ScheduledState
+    AppointmentState <|.. ConfirmedState
+    AppointmentState <|.. CompletedState
+    AppointmentState <|.. CancelledState
+    Appointment --> AppointmentState
+    Appointment --> Patient
+    Appointment --> Doctor
+    Appointment --> MedicalService
+
+    class TimeSlot {
+        - start: LocalDateTime
+        - end: LocalDateTime
+        + overlaps(other: TimeSlot): boolean
+        + getDurationMinutes(): int
+    }
+
+    Appointment --> TimeSlot
+
+    %% ═══════════════════════════════════════
+    %% OBSERVER — Notifications
+    %% ═══════════════════════════════════════
+    class AppointmentObserver {
+        <<interface>>
+        + onAppointmentEvent(event: AppointmentEvent): void
+    }
+
+    class AppointmentEvent {
+        - type: EventType
+        - appointment: Appointment
+        - timestamp: LocalDateTime
+        + getType(): EventType
+        + getAppointment(): Appointment
+    }
+
+    class EventType {
+        <<enumeration>>
+        CONFIRMED
+        CANCELLED
+        COMPLETED
+        RESCHEDULED
+        REMINDER
+    }
+
+    AppointmentObserver <|.. NotificationDispatcher
+    Appointment --> AppointmentObserver : notifies
+
+    %% ═══════════════════════════════════════
+    %% NOTIFICATIONS
+    %% ═══════════════════════════════════════
+    class NotificationDispatcher {
+        - factory: NotificationFactory
+        - channels: List~NotificationChannel~
+        + onAppointmentEvent(event: AppointmentEvent): void
+        - resolveChannels(user: User): List~NotificationChannel~
+    }
+
+    class NotificationFactory {
+        + createConfirmationNotification(appt: Appointment): Notification
+        + createCancellationNotification(appt: Appointment): Notification
+        + createReminderNotification(appt: Appointment): Notification
+        + createScheduleChangeNotification(appt: Appointment): Notification
+    }
+
+    class Notification {
+        - id: String
+        - recipient: User
+        - subject: String
+        - body: String
+        - channel: String
+        - createdAt: LocalDateTime
+    }
+
+    class NotificationChannel {
+        <<interface>>
+        + send(recipient: User, notification: Notification): void
+        + getChannelName(): String
+    }
+
+    class EmailNotificationChannel {
+        + send(recipient: User, notification: Notification): void
+        + getChannelName(): String
+    }
+
+    class SmsNotificationChannel {
+        + send(recipient: User, notification: Notification): void
+        + getChannelName(): String
+    }
+
+    class InAppNotificationChannel {
+        + send(recipient: User, notification: Notification): void
+        + getChannelName(): String
+    }
+
+    NotificationChannel <|.. EmailNotificationChannel
+    NotificationChannel <|.. SmsNotificationChannel
+    NotificationChannel <|.. InAppNotificationChannel
+    NotificationDispatcher --> NotificationFactory
+    NotificationDispatcher --> NotificationChannel
+    NotificationFactory ..> Notification
+
+    %% ═══════════════════════════════════════
+    %% PAYMENT — Strategy Pattern
+    %% ═══════════════════════════════════════
+    class PaymentStrategy {
+        <<interface>>
+        + processPayment(amount: double): PaymentResult
+        + getMethodName(): String
+    }
+
+    class CreditCardPayment {
+        - cardToken: String
+        + processPayment(amount: double): PaymentResult
+        + getMethodName(): String
+    }
+
+    class InsurancePayment {
+        - insuranceId: String
+        - coverageRate: double
+        + processPayment(amount: double): PaymentResult
+        + getMethodName(): String
+    }
+
+    class DigitalWalletPayment {
+        - walletId: String
+        + processPayment(amount: double): PaymentResult
+        + getMethodName(): String
+    }
+
+    class PaymentResult {
+        - success: boolean
+        - transactionId: String
+        - amountCharged: double
+        - message: String
+    }
+
+    PaymentStrategy <|.. CreditCardPayment
+    PaymentStrategy <|.. InsurancePayment
+    PaymentStrategy <|.. DigitalWalletPayment
+    PaymentStrategy ..> PaymentResult
+
+    class PaymentProcessor {
+        - strategy: PaymentStrategy
+        - pricingCalculator: PricingCalculator
+        + setStrategy(strategy: PaymentStrategy): void
+        + processAppointmentPayment(appt: Appointment): PaymentResult
+        + generateInvoice(appt: Appointment, result: PaymentResult): Invoice
+    }
+
+    PaymentProcessor --> PaymentStrategy
+    PaymentProcessor --> PricingCalculator
+
+    %% ═══════════════════════════════════════
+    %% PRICING — Strategy Pattern
+    %% ═══════════════════════════════════════
+    class PricingStrategy {
+        <<interface>>
+        + applyDiscount(basePrice: double): double
+        + getDescription(): String
+    }
+
+    class InsuranceDiscountStrategy {
+        - coverageRate: double
+        + applyDiscount(basePrice: double): double
+        + getDescription(): String
+    }
+
+    class PercentageDiscountStrategy {
+        - discountPercent: double
+        + applyDiscount(basePrice: double): double
+        + getDescription(): String
+    }
+
+    class FixedDiscountStrategy {
+        - discountAmount: double
+        + applyDiscount(basePrice: double): double
+        + getDescription(): String
+    }
+
+    class PricingCalculator {
+        - strategies: List~PricingStrategy~
+        + addStrategy(strategy: PricingStrategy): void
+        + computeFinalPrice(basePrice: double): double
+        + getPricingBreakdown(basePrice: double): PricingBreakdown
+    }
+
+    PricingStrategy <|.. InsuranceDiscountStrategy
+    PricingStrategy <|.. PercentageDiscountStrategy
+    PricingStrategy <|.. FixedDiscountStrategy
+    PricingCalculator --> PricingStrategy
+
+    %% ═══════════════════════════════════════
+    %% SERVICES — Application Layer
+    %% ═══════════════════════════════════════
+    class AppointmentScheduler {
+        - availabilityService: IAvailabilityService
+        - appointmentRepository: IAppointmentRepository
+        - notificationDispatcher: INotificationDispatcher
+        - pricingCalculator: PricingCalculator
+        + scheduleAppointment(patient, doctor, service, slot): Appointment
+        + modifyAppointment(id: String, newSlot: TimeSlot): Appointment
+        + cancelAppointment(id: String): void
+    }
+
+    class AvailabilityService {
+        - timeSlots: Map~String, List~TimeSlot~~
+        + isAvailable(doctor: Doctor, slot: TimeSlot): boolean
+        + defineSlot(doctor: Doctor, slot: TimeSlot): void
+        + blockPeriod(doctor: Doctor, start: LocalDateTime, end: LocalDateTime): void
+        + getAvailableSlots(doctor: Doctor, date: LocalDate): List~TimeSlot~
+    }
+
+    %% ═══════════════════════════════════════
+    %% SINGLETON — Configuration
+    %% ═══════════════════════════════════════
+    class SystemConfigurationManager {
+        - instance: SystemConfigurationManager$
+        - config: Map~String, Object~
+        - SystemConfigurationManager()
+        + getInstance(): SystemConfigurationManager$
+        + get(key: String): Object
+        + set(key: String, value: Object): void
+        + loadFromFile(path: String): void
+    }
+
+    %% ═══════════════════════════════════════
+    %% KEY RELATIONSHIPS
+    %% ═══════════════════════════════════════
+    AppointmentScheduler --> AvailabilityService
+    AppointmentScheduler --> NotificationDispatcher
+    AppointmentScheduler --> PricingCalculator
+    AppointmentScheduler ..> Appointment : creates

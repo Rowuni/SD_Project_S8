@@ -1,0 +1,57 @@
+---
+title: Healthcare Appointment Management System — Use Case Diagram
+---
+graph TD
+    %% Actors
+    P([Patient])
+    D([Doctor])
+    A([Administrator])
+    S([System / Scheduler])
+
+    %% ─── Patient use cases ───
+    P --> UC1[Register / Login]
+    P --> UC2[Browse Clinics & Services]
+    P --> UC3[Book Appointment]
+    P --> UC4[Modify Appointment]
+    P --> UC5[Cancel Appointment]
+    P --> UC6[View Appointment History]
+    P --> UC7[Select Payment Method]
+    P --> UC8[View Final Cost]
+    P --> UC9[Update Personal Profile]
+
+    %% ─── Doctor use cases ───
+    D --> UC1
+    D --> UC10[Define Availability Slots]
+    D --> UC11[Block Unavailability Period]
+    D --> UC12[View Daily / Weekly Schedule]
+    D --> UC5
+
+    %% ─── Administrator use cases ───
+    A --> UC1
+    A --> UC13[Manage User Accounts & Roles]
+    A --> UC14[Manage Clinics]
+    A --> UC15[Manage Medical Services]
+    A --> UC16[Configure System Settings]
+
+    %% ─── System-triggered use cases ───
+    UC3 --> UC17[Check Doctor Availability]
+    UC3 --> UC18[Prevent Scheduling Conflict]
+    UC3 --> UC19[Send Confirmation Notification]
+    UC5 --> UC20[Send Cancellation Notification]
+    UC10 --> UC18
+    S --> UC21[Send Appointment Reminder]
+
+    %% ─── Notifications (extend) ───
+    UC19 -.->|«extend»| UC22[Notify via Email]
+    UC19 -.->|«extend»| UC23[Notify via SMS]
+    UC19 -.->|«extend»| UC24[Notify In-App]
+    UC20 -.->|«extend»| UC22
+    UC20 -.->|«extend»| UC23
+    UC20 -.->|«extend»| UC24
+    UC21 -.->|«extend»| UC22
+    UC21 -.->|«extend»| UC23
+    UC21 -.->|«extend»| UC24
+
+    %% ─── Include relationships ───
+    UC3 -.->|«include»| UC7
+    UC7 -.->|«include»| UC8

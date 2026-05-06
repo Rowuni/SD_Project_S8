@@ -1,0 +1,39 @@
+---
+title: Sequence Diagram 1 — Book an Appointment
+---
+sequenceDiagram
+    actor Patient
+    participant AppointmentController
+    participant AppointmentScheduler
+    participant AvailabilityService
+    participant PricingCalculator
+    participant Appointment
+    participant NotificationDispatcher
+    participant NotificationFactory
+    participant EmailNotificationChannel
+
+    Patient->>AppointmentController: POST /appointments (doctorId, serviceId, slot, paymentMethod)
+    AppointmentController->>AppointmentScheduler: scheduleAppointment(patient, doctor, service, slot)
+
+    AppointmentScheduler->>AvailabilityService: isAvailable(doctor, slot)
+    AvailabilityService-->>AppointmentScheduler: true
+
+    AppointmentScheduler->>PricingCalculator: computeFinalPrice(service.baseFee)
+    PricingCalculator-->>AppointmentScheduler: finalPrice: double
+
+    AppointmentScheduler->>Appointment: new Appointment(patient, doctor, service, slot)
+    Note over Appointment: state = ScheduledState
+
+    AppointmentScheduler->>Appointment: confirm()
+    Appointment->>Appointment: state.confirm(this)
+    Note over Appointment: state → ConfirmedState
+    Appointment->>NotificationDispatcher: onAppointmentEvent(CONFIRMED, appointment)
+
+    NotificationDispatcher->>NotificationFactory: createConfirmationNotification(appointment)
+    NotificationFactory-->>NotificationDispatcher: notification
+
+    NotificationDispatcher->>EmailNotificationChannel: send(patient, notification)
+    EmailNotificationChannel-->>NotificationDispatcher: ok
+
+    AppointmentScheduler-->>AppointmentController: Appointment (CONFIRMED)
+    AppointmentController-->>Patient: 201 Created — Appointment confirmed

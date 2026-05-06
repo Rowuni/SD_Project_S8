@@ -1,0 +1,44 @@
+---
+title: Sequence Diagram 3 — Payment Process
+---
+sequenceDiagram
+    actor Patient
+    participant PaymentController
+    participant PaymentProcessor
+    participant PricingCalculator
+    participant InsuranceDiscountStrategy
+    participant PercentageDiscountStrategy
+    participant PaymentStrategy as CreditCardPayment
+    participant NotificationDispatcher
+    participant NotificationFactory
+
+    Patient->>PaymentController: POST /payments (appointmentId, method=CREDIT_CARD, insuranceId)
+    PaymentController->>PaymentProcessor: processAppointmentPayment(appointment, strategy)
+
+    PaymentProcessor->>PricingCalculator: computeFinalPrice(service.baseFee)
+
+    PricingCalculator->>InsuranceDiscountStrategy: applyDiscount(baseFee)
+    InsuranceDiscountStrategy-->>PricingCalculator: reducedPrice
+
+    PricingCalculator->>PercentageDiscountStrategy: applyDiscount(reducedPrice)
+    PercentageDiscountStrategy-->>PricingCalculator: finalPrice
+
+    PricingCalculator-->>PaymentProcessor: finalPrice + PricingBreakdown
+
+    Note over PaymentProcessor: Displays breakdown to patient before confirming
+
+    Patient->>PaymentController: POST /payments/confirm (appointmentId)
+    PaymentController->>PaymentProcessor: confirmPayment(appointmentId)
+
+    PaymentProcessor->>PaymentStrategy: processPayment(finalPrice)
+    PaymentStrategy-->>PaymentProcessor: PaymentResult(success=true, transactionId)
+
+    PaymentProcessor->>PaymentProcessor: generateInvoice(appointment, result)
+
+    PaymentProcessor->>NotificationDispatcher: notifyPaymentConfirmed(appointment, invoice)
+    NotificationDispatcher->>NotificationFactory: createPaymentConfirmationNotification(appointment)
+    NotificationFactory-->>NotificationDispatcher: notification
+    NotificationDispatcher-->>Patient: in-app + email notification
+
+    PaymentProcessor-->>PaymentController: PaymentResult
+    PaymentController-->>Patient: 200 OK — Payment confirmed, invoice generated
