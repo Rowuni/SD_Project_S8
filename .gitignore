@@ -1,0 +1,8 @@
+# Compiled Java output — never commit binaries
+out/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.class
