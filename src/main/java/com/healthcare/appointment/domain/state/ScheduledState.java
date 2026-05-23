@@ -5,7 +5,7 @@ import com.healthcare.appointment.domain.observer.AppointmentEvent;
 import com.healthcare.appointment.domain.observer.EventType;
 
 /**
- * Initial state — appointment has been requested but not yet confirmed.
+ * Initial state - appointment has been requested but not yet confirmed.
  * Valid transitions: confirm(), cancel()
  */
 public class ScheduledState implements AppointmentState {
@@ -28,5 +28,7 @@ public class ScheduledState implements AppointmentState {
     }
 
     @Override
-    public String getStateName() { return "SCHEDULED"; }
+    public String getStateName() {
+        return "SCHEDULED";
+    }
 }

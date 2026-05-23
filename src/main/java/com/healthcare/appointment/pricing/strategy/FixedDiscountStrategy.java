@@ -2,7 +2,7 @@ package com.healthcare.appointment.pricing.strategy;
 
 /**
  * Applies a fixed monetary reduction to the base price.
- * E.g., -15€.
+ * E.g., -15EUR.
  */
 public class FixedDiscountStrategy implements PricingStrategy {
 
@@ -22,6 +22,6 @@ public class FixedDiscountStrategy implements PricingStrategy {
 
     @Override
     public String getDescription() {
-        return String.format("Fixed discount: -%.2f€", discountAmount);
+        return String.format("Fixed discount: -%.2fEUR", discountAmount);
     }
 }

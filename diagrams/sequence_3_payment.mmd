@@ -1,5 +1,5 @@
 ---
-title: Sequence Diagram 3 — Payment Process
+title: Sequence Diagram 3 - Payment Process
 ---
 sequenceDiagram
     actor Patient
@@ -41,4 +41,4 @@ sequenceDiagram
     NotificationDispatcher-->>Patient: in-app + email notification
 
     PaymentProcessor-->>PaymentController: PaymentResult
-    PaymentController-->>Patient: 200 OK — Payment confirmed, invoice generated
+    PaymentController-->>Patient: 200 OK - Payment confirmed, invoice generated

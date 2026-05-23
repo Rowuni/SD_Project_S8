@@ -1,10 +1,10 @@
 ---
-title: Healthcare Appointment Management System — Class Diagram
+title: Healthcare Appointment Management System - Class Diagram
 ---
 classDiagram
 
     %% ═══════════════════════════════════════
-    %% DOMAIN — Users
+    %% DOMAIN - Users
     %% ═══════════════════════════════════════
     class User {
         <<abstract>>
@@ -53,7 +53,7 @@ classDiagram
     User --> UserRole
 
     %% ═══════════════════════════════════════
-    %% DOMAIN — Clinic & Services
+    %% DOMAIN - Clinic & Services
     %% ═══════════════════════════════════════
     class Clinic {
         - id: String
@@ -78,7 +78,7 @@ classDiagram
     MedicalService "many" --> "many" Doctor
 
     %% ═══════════════════════════════════════
-    %% DOMAIN — Appointment & State (State Pattern)
+    %% DOMAIN - Appointment & State (State Pattern)
     %% ═══════════════════════════════════════
     class Appointment {
         - id: String
@@ -151,7 +151,7 @@ classDiagram
     Appointment --> TimeSlot
 
     %% ═══════════════════════════════════════
-    %% OBSERVER — Notifications
+    %% OBSERVER - Notifications
     %% ═══════════════════════════════════════
     class AppointmentObserver {
         <<interface>>
@@ -233,7 +233,7 @@ classDiagram
     NotificationFactory ..> Notification
 
     %% ═══════════════════════════════════════
-    %% PAYMENT — Strategy Pattern
+    %% PAYMENT - Strategy Pattern
     %% ═══════════════════════════════════════
     class PaymentStrategy {
         <<interface>>
@@ -284,7 +284,7 @@ classDiagram
     PaymentProcessor --> PricingCalculator
 
     %% ═══════════════════════════════════════
-    %% PRICING — Strategy Pattern
+    %% PRICING - Strategy Pattern
     %% ═══════════════════════════════════════
     class PricingStrategy {
         <<interface>>
@@ -323,7 +323,7 @@ classDiagram
     PricingCalculator --> PricingStrategy
 
     %% ═══════════════════════════════════════
-    %% SERVICES — Application Layer
+    %% SERVICES - Application Layer
     %% ═══════════════════════════════════════
     class AppointmentScheduler {
         - availabilityService: IAvailabilityService
@@ -344,7 +344,7 @@ classDiagram
     }
 
     %% ═══════════════════════════════════════
-    %% SINGLETON — Configuration
+    %% SINGLETON - Configuration
     %% ═══════════════════════════════════════
     class SystemConfigurationManager {
         - instance: SystemConfigurationManager$

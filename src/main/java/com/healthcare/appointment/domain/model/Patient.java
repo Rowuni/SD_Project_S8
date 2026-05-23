@@ -3,8 +3,9 @@ package com.healthcare.appointment.domain.model;
 /**
  * Represents a patient.
  *
- * SOLID — ISP: Implements only patient-relevant interface (Schedulable).
- * GRASP — Creator: Holds patient-specific data used in appointment creation context.
+ * SOLID - ISP: Implements only patient-relevant interface (Schedulable).
+ * GRASP - Creator: Holds patient-specific data used in appointment creation
+ * context.
  */
 public class Patient extends User {
 
@@ -15,5 +16,7 @@ public class Patient extends User {
         this.medicalRecordNumber = medicalRecordNumber;
     }
 
-    public String getMedicalRecordNumber() { return medicalRecordNumber; }
+    public String getMedicalRecordNumber() {
+        return medicalRecordNumber;
+    }
 }
