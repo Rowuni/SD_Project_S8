@@ -7,14 +7,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Computes the final price of a medical service by applying a chain of PricingStrategies.
+ * Computes the final price of a medical service by applying a chain of
+ * PricingStrategies.
  *
- * DESIGN PATTERN — Strategy (context): iterates over a list of strategies.
- * SOLID — SRP: Only responsible for price computation.
- * SOLID — OCP: Strategies are injected; new discount types never modify this class.
- * SOLID — DIP: Depends on PricingStrategy abstraction.
- * GRASP — Information Expert: Holds all pricing strategies needed to compute the final cost.
- * GRASP — Pure Fabrication: Not a domain concept; created to give discount computation a clean home.
+ * DESIGN PATTERN - Strategy (context): iterates over a list of strategies.
+ * SOLID - SRP: Only responsible for price computation.
+ * SOLID - OCP: Strategies are injected; new discount types never modify this
+ * class.
+ * SOLID - DIP: Depends on PricingStrategy abstraction.
+ * GRASP - Information Expert: Holds all pricing strategies needed to compute
+ * the final cost.
+ * GRASP - Pure Fabrication: Not a domain concept; created to give discount
+ * computation a clean home.
  */
 public class PricingCalculator {
 
@@ -40,16 +44,16 @@ public class PricingCalculator {
      */
     public String getPricingBreakdown(double basePrice) {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("  Base price:        %.2f€%n", basePrice));
+        sb.append(String.format("  Base price:        %.2fEUR%n", basePrice));
         double price = basePrice;
         for (PricingStrategy strategy : strategies) {
             double before = price;
             price = strategy.applyDiscount(price);
-            sb.append(String.format("  %-30s %.2f€ → %.2f€%n",
+            sb.append(String.format("  %-30s %.2fEUR -> %.2fEUR%n",
                     strategy.getDescription() + ":", before, price));
         }
         sb.append(String.format("  ─────────────────────────────────%n"));
-        sb.append(String.format("  Final price:       %.2f€%n", Math.round(price * 100.0) / 100.0));
+        sb.append(String.format("  Final price:       %.2fEUR%n", Math.round(price * 100.0) / 100.0));
         return sb.toString();
     }
 

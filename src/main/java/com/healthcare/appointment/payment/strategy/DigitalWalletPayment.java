@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * Simulates a digital wallet payment.
  *
- * DESIGN PATTERN — Strategy (Concrete Strategy)
+ * DESIGN PATTERN - Strategy (Concrete Strategy)
  */
 public class DigitalWalletPayment implements PaymentStrategy {
 
@@ -19,10 +19,12 @@ public class DigitalWalletPayment implements PaymentStrategy {
     @Override
     public PaymentResult processPayment(double amount) {
         String txId = "DW-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        System.out.printf("  [DigitalWalletPayment] Debiting %.2f€ from wallet %s%n", amount, walletId);
+        System.out.printf("  [DigitalWalletPayment] Debiting %.2fEUR from wallet %s%n", amount, walletId);
         return new PaymentResult(true, txId, amount, "Digital wallet payment simulated successfully.");
     }
 
     @Override
-    public String getMethodName() { return "DIGITAL_WALLET"; }
+    public String getMethodName() {
+        return "DIGITAL_WALLET";
+    }
 }

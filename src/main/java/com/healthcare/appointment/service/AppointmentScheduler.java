@@ -13,14 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Application-layer service that orchestrates the appointment booking lifecycle.
+ * Application-layer service that orchestrates the appointment booking
+ * lifecycle.
  *
- * DESIGN PATTERN — uses State (via Appointment) and Observer (via registered observers).
- * SOLID — SRP: Only orchestrates; delegates availability checks, notifications, pricing.
- * SOLID — DIP: Depends on AvailabilityService and observers via abstractions.
- * GRASP — Controller: Entry point for appointment use-case logic.
- * GRASP — Creator: Constructs Appointment objects (holds all data needed).
- * GRASP — Low Coupling: Does not reference concrete notification or payment classes.
+ * DESIGN PATTERN - uses State (via Appointment) and Observer (via registered
+ * observers).
+ * SOLID - SRP: Only orchestrates; delegates availability checks, notifications,
+ * pricing.
+ * SOLID - DIP: Depends on AvailabilityService and observers via abstractions.
+ * GRASP - Controller: Entry point for appointment use-case logic.
+ * GRASP - Creator: Constructs Appointment objects (holds all data needed).
+ * GRASP - Low Coupling: Does not reference concrete notification or payment
+ * classes.
  */
 public class AppointmentScheduler {
 
@@ -31,7 +35,7 @@ public class AppointmentScheduler {
     private final Map<String, Appointment> appointments = new HashMap<>();
 
     public AppointmentScheduler(AvailabilityService availabilityService,
-                                List<AppointmentObserver> defaultObservers) {
+            List<AppointmentObserver> defaultObservers) {
         this.availabilityService = availabilityService;
         this.defaultObservers = defaultObservers;
     }
@@ -39,10 +43,11 @@ public class AppointmentScheduler {
     /**
      * Books a new appointment after verifying doctor availability.
      *
-     * @throws IllegalStateException if the doctor is not available for the requested slot.
+     * @throws IllegalStateException if the doctor is not available for the
+     *                               requested slot.
      */
     public Appointment scheduleAppointment(Patient patient, Doctor doctor,
-                                           MedicalService service, TimeSlot slot) {
+            MedicalService service, TimeSlot slot) {
         if (!availabilityService.isAvailable(doctor, slot)) {
             throw new IllegalStateException(
                     "Doctor " + doctor.getName() + " is not available for slot: " + slot);

@@ -3,7 +3,7 @@ package com.healthcare.appointment.domain.state;
 import com.healthcare.appointment.domain.model.Appointment;
 
 /**
- * Terminal state — appointment was cancelled.
+ * Terminal state - appointment was cancelled.
  * No further transitions are valid.
  */
 public class CancelledState implements AppointmentState {
@@ -24,5 +24,7 @@ public class CancelledState implements AppointmentState {
     }
 
     @Override
-    public String getStateName() { return "CANCELLED"; }
+    public String getStateName() {
+        return "CANCELLED";
+    }
 }

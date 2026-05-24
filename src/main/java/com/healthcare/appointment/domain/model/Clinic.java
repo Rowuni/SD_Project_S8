@@ -8,8 +8,8 @@ import java.util.UUID;
 /**
  * Represents a medical clinic.
  *
- * GRASP — Information Expert: Knows its services and doctors.
- * GRASP — Creator: Creates associations between services and doctors.
+ * GRASP - Information Expert: Knows its services and doctors.
+ * GRASP - Creator: Creates associations between services and doctors.
  */
 public class Clinic {
 
@@ -24,9 +24,17 @@ public class Clinic {
         this.address = address;
     }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getAddress() { return address; }
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
 
     public void addService(MedicalService service) {
         services.add(service);

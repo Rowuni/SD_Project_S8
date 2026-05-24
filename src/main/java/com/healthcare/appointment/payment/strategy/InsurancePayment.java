@@ -5,9 +5,10 @@ import java.util.UUID;
 
 /**
  * Simulates an insurance-covered payment.
- * The insurance covers a portion; the remaining amount is charged to the patient.
+ * The insurance covers a portion; the remaining amount is charged to the
+ * patient.
  *
- * DESIGN PATTERN — Strategy (Concrete Strategy)
+ * DESIGN PATTERN - Strategy (Concrete Strategy)
  */
 public class InsurancePayment implements PaymentStrategy {
 
@@ -23,12 +24,14 @@ public class InsurancePayment implements PaymentStrategy {
     public PaymentResult processPayment(double amount) {
         double patientPays = Math.round(amount * patientShareRate * 100.0) / 100.0;
         String txId = "INS-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        System.out.printf("  [InsurancePayment] Insurance %s covers %.0f%%, patient pays %.2f€%n",
+        System.out.printf("  [InsurancePayment] Insurance %s covers %.0f%%, patient pays %.2fEUR%n",
                 insuranceId, (1 - patientShareRate) * 100, patientPays);
         return new PaymentResult(true, txId, patientPays,
-                String.format("Insurance payment simulated. Patient share: %.2f€", patientPays));
+                String.format("Insurance payment simulated. Patient share: %.2fEUR", patientPays));
     }
 
     @Override
-    public String getMethodName() { return "INSURANCE"; }
+    public String getMethodName() {
+        return "INSURANCE";
+    }
 }

@@ -5,9 +5,10 @@ import java.util.UUID;
 /**
  * Abstract base class for all users of the system.
  *
- * SOLID — SRP: Holds only identity and profile data.
- * SOLID — LSP: Patient, Doctor, Administrator all extend this without breaking contracts.
- * GRASP — Information Expert: Knows its own role and profile data.
+ * SOLID - SRP: Holds only identity and profile data.
+ * SOLID - LSP: Patient, Doctor, Administrator all extend this without breaking
+ * contracts.
+ * GRASP - Information Expert: Knows its own role and profile data.
  */
 public abstract class User {
 
@@ -25,10 +26,21 @@ public abstract class User {
         this.role = role;
     }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public UserRole getRole() { return role; }
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
 
     public void updateProfile(String newName, String newEmail) {
         this.name = newName;

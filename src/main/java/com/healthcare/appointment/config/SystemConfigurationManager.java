@@ -6,17 +6,18 @@ import java.util.Map;
 /**
  * Singleton holding system-wide configuration parameters.
  *
- * DESIGN PATTERN — Singleton
+ * DESIGN PATTERN - Singleton
  * Thread-safe via initialization-on-demand holder idiom.
  *
- * SOLID — SRP: Only holds and provides system configuration.
- * GRASP — Information Expert: The single authoritative source of system config.
+ * SOLID - SRP: Only holds and provides system configuration.
+ * GRASP - Information Expert: The single authoritative source of system config.
  */
 public class SystemConfigurationManager {
 
     private final Map<String, Object> config = new HashMap<>();
 
-    // Initialization-on-demand holder — thread-safe without synchronization overhead
+    // Initialization-on-demand holder - thread-safe without synchronization
+    // overhead
     private static final class Holder {
         private static final SystemConfigurationManager INSTANCE = new SystemConfigurationManager();
     }
@@ -49,7 +50,8 @@ public class SystemConfigurationManager {
 
     public int getInt(String key, int defaultValue) {
         Object value = config.get(key);
-        if (value instanceof Integer) return (Integer) value;
+        if (value instanceof Integer)
+            return (Integer) value;
         return defaultValue;
     }
 

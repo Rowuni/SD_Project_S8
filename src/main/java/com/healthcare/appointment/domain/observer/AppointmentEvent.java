@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 /**
  * Immutable event object carrying the type and the affected appointment.
  *
- * DESIGN PATTERN — Observer (event object)
- * GRASP — Information Expert: carries all information observers need.
+ * DESIGN PATTERN - Observer (event object)
+ * GRASP - Information Expert: carries all information observers need.
  */
 public class AppointmentEvent {
 
@@ -21,9 +21,17 @@ public class AppointmentEvent {
         this.timestamp = LocalDateTime.now();
     }
 
-    public EventType getType() { return type; }
-    public Appointment getAppointment() { return appointment; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public EventType getType() {
+        return type;
+    }
+
+    public Appointment getAppointment() {
+        return appointment;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public String toString() {

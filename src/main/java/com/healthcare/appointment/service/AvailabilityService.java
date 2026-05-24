@@ -13,17 +13,19 @@ import java.util.Map;
 /**
  * Manages doctor availability: time slots and blocked periods.
  *
- * SOLID — SRP: Only responsible for availability logic.
- * SOLID — DIP: Used through an implicit abstraction (could be extracted to interface).
- * GRASP — Information Expert: Holds all slot data for all doctors.
- * GRASP — High Cohesion: Every method directly relates to availability management.
+ * SOLID - SRP: Only responsible for availability logic.
+ * SOLID - DIP: Used through an implicit abstraction (could be extracted to
+ * interface).
+ * GRASP - Information Expert: Holds all slot data for all doctors.
+ * GRASP - High Cohesion: Every method directly relates to availability
+ * management.
  */
 public class AvailabilityService {
 
-    // doctorId → list of available TimeSlots
+    // doctorId -> list of available TimeSlots
     private final Map<String, List<TimeSlot>> availableSlots = new HashMap<>();
 
-    // doctorId → list of blocked TimeSlots
+    // doctorId -> list of blocked TimeSlots
     private final Map<String, List<TimeSlot>> blockedSlots = new HashMap<>();
 
     public void defineSlot(Doctor doctor, TimeSlot slot) {
@@ -35,9 +37,11 @@ public class AvailabilityService {
     }
 
     /**
-     * Returns true if the doctor has no conflict (existing appointments or blocks) for the slot.
+     * Returns true if the doctor has no conflict (existing appointments or blocks)
+     * for the slot.
      *
-     * GRASP — Information Expert: Only this class holds the data to answer this question.
+     * GRASP - Information Expert: Only this class holds the data to answer this
+     * question.
      */
     public boolean isAvailable(Doctor doctor, TimeSlot requestedSlot) {
         // Check against blocked periods
@@ -75,7 +79,8 @@ public class AvailabilityService {
     private boolean isBlocked(Doctor doctor, TimeSlot slot) {
         List<TimeSlot> blocks = blockedSlots.getOrDefault(doctor.getId(), Collections.emptyList());
         for (TimeSlot blocked : blocks) {
-            if (slot.overlaps(blocked)) return true;
+            if (slot.overlaps(blocked))
+                return true;
         }
         return false;
     }

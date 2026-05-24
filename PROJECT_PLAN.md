@@ -1,8 +1,8 @@
-# Healthcare Appointment Management System — Plan de projet
+# Healthcare Appointment Management System - Plan de projet
 
 ## Contexte
 
-Concevoir un système de gestion de rendez-vous médicaux entre patients, médecins et cliniques. L'accent est mis sur la **qualité du design logiciel**, la modularité et l'extensibilité — pas sur une implémentation complète.
+Concevoir un système de gestion de rendez-vous médicaux entre patients, médecins et cliniques. L'accent est mis sur la **qualité du design logiciel**, la modularité et l'extensibilité - pas sur une implémentation complète.
 
 ---
 
@@ -32,7 +32,7 @@ Concevoir un système de gestion de rendez-vous médicaux entre patients, médec
 - Demande, modification, annulation de RDV
 - Vérification des disponibilités du médecin avant confirmation
 - Prévention des conflits de planning
-- Cycle de vie du RDV : `SCHEDULED → CONFIRMED → COMPLETED | CANCELLED`
+- Cycle de vie du RDV : `SCHEDULED -> CONFIRMED -> COMPLETED | CANCELLED`
 
 ### 4. Gestion des disponibilités médecins
 - Définir et mettre à jour les plages horaires
@@ -80,11 +80,11 @@ Concevoir un système de gestion de rendez-vous médicaux entre patients, médec
 ### Principes SOLID
 | Principe | Application attendue |
 |---|---|
-| **S** — Single Responsibility | Chaque classe a une seule responsabilité |
-| **O** — Open/Closed | Ouvert à l'extension, fermé à la modification |
-| **L** — Liskov Substitution | Sous-types substituables sans casser le comportement |
-| **I** — Interface Segregation | Interfaces spécifiques plutôt que générales |
-| **D** — Dependency Inversion | Dépendre des abstractions, pas des implémentations |
+| **S** - Single Responsibility | Chaque classe a une seule responsabilité |
+| **O** - Open/Closed | Ouvert à l'extension, fermé à la modification |
+| **L** - Liskov Substitution | Sous-types substituables sans casser le comportement |
+| **I** - Interface Segregation | Interfaces spécifiques plutôt que générales |
+| **D** - Dependency Inversion | Dépendre des abstractions, pas des implémentations |
 
 ### Principes GRASP
 - Creator, Information Expert, Controller, Low Coupling, High Cohesion, Polymorphism
@@ -102,9 +102,9 @@ Concevoir un système de gestion de rendez-vous médicaux entre patients, médec
 
 ## Diagrammes de séquence à produire (suggestions)
 
-1. **Prise de rendez-vous** : Patient → Système → Vérification dispo → Confirmation → Notification
-2. **Annulation d'un RDV** : Patient/Médecin → Changement d'état → Notification
-3. **Processus de paiement** : Sélection méthode → Calcul prix final → Simulation confirmation
+1. **Prise de rendez-vous** : Patient -> Système -> Vérification dispo -> Confirmation -> Notification
+2. **Annulation d'un RDV** : Patient/Médecin -> Changement d'état -> Notification
+3. **Processus de paiement** : Sélection méthode -> Calcul prix final -> Simulation confirmation
 
 ---
 

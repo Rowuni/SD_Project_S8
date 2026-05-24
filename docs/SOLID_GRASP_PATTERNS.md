@@ -1,4 +1,4 @@
-# Design Principles & Patterns — Healthcare Appointment Management System
+# Design Principles & Patterns - Healthcare Appointment Management System
 
 > This document serves as the detailed reference for the written report.  
 > It covers SOLID principles, GRASP principles, and the applied design patterns, with justifications rooted in the system's architecture.
@@ -34,10 +34,10 @@ Every class in the system is scoped to a single concern. Responsibilities that m
 | `AuthService` | Handles registration, login and token management only |
 
 **Concrete justification:**  
-Consider `AppointmentScheduler`: it only orchestrates the booking lifecycle. It does **not** check doctor availability itself (delegated to `AvailabilityService`), does **not** send notifications (delegated to `NotificationDispatcher`), and does **not** compute prices (delegated to `PricingCalculator`). Each of these could change independently — e.g., adding SMS notifications does not require touching the appointment scheduling logic.
+Consider `AppointmentScheduler`: it only orchestrates the booking lifecycle. It does **not** check doctor availability itself (delegated to `AvailabilityService`), does **not** send notifications (delegated to `NotificationDispatcher`), and does **not** compute prices (delegated to `PricingCalculator`). Each of these could change independently - e.g., adding SMS notifications does not require touching the appointment scheduling logic.
 
 ```java
-// AppointmentScheduler.java — single responsibility: orchestrate the booking flow
+// AppointmentScheduler.java - single responsibility: orchestrate the booking flow
 public Appointment scheduleAppointment(Patient patient, Doctor doctor,
                                        MedicalService service, TimeSlot slot) {
     if (!availabilityService.isAvailable(doctor, slot)) {       // delegate check
@@ -63,7 +63,7 @@ The system is designed so that new capabilities (new payment methods, notificati
 
 **Application in our system:**
 
-- **Payment methods:** The `PaymentStrategy` interface defines the contract. Adding a `CryptoWalletPayment` class in the future only requires implementing this interface — `PaymentProcessor` does not change.
+- **Payment methods:** The `PaymentStrategy` interface defines the contract. Adding a `CryptoWalletPayment` class in the future only requires implementing this interface - `PaymentProcessor` does not change.
 - **Pricing adjustments:** The `PricingStrategy` interface (with implementations `InsuranceDiscount`, `PercentageDiscount`, `FixedDiscount`) allows stacking discount strategies. New discount types are extensions, not modifications.
 - **Notification channels:** The `NotificationChannel` interface allows adding a `PushNotificationChannel` without modifying `NotificationDispatcher`.
 - **Appointment state transitions:** The `AppointmentState` interface encapsulates transition logic per state. Adding a new state (e.g., `PENDING_PAYMENT`) is done by creating a new class.
@@ -86,13 +86,13 @@ All abstractions in the system are designed so that any implementation can repla
 Every `PaymentStrategy` implementation always returns a `PaymentResult` with a non-null status. Every `NotificationChannel` implementation always either sends successfully or throws a typed `NotificationException`, never silently fails.
 
 ```java
-// PaymentProcessor uses any PaymentStrategy — CreditCard, Insurance, DigitalWallet all work
+// PaymentProcessor uses any PaymentStrategy - CreditCard, Insurance, DigitalWallet all work
 public PaymentResult processAppointmentPayment(Appointment appointment) {
     double finalPrice = pricingCalculator.computeFinalPrice(appointment.getService().getBaseFee());
     return strategy.processPayment(finalPrice);  // identical call regardless of implementation
 }
 
-// LSP in action — CreditCardPayment and DigitalWalletPayment are fully substitutable:
+// LSP in action - CreditCardPayment and DigitalWalletPayment are fully substitutable:
 paymentProcessor.setStrategy(new CreditCardPayment("tok_visa_4242"));
 PaymentResult r1 = paymentProcessor.processAppointmentPayment(appt);  // works
 
@@ -123,7 +123,7 @@ Rather than one large `UserCapabilities` interface, the system defines fine-grai
 A `Doctor` is never forced to implement `requestAppointment()`, and a payment strategy class is never burdened with availability management methods.
 
 ```java
-// Fine-grained interfaces — each actor only sees what it needs
+// Fine-grained interfaces - each actor only sees what it needs
 
 public interface PaymentStrategy {
     PaymentResult processPayment(double amount);  // payment classes only
@@ -135,11 +135,11 @@ public interface NotificationChannel {
     String getChannelName();
 }
 
-// AppointmentObserver — single focused method
+// AppointmentObserver - single focused method
 public interface AppointmentObserver {
     void onAppointmentEvent(AppointmentEvent event);
 }
-// NotificationDispatcher implements ONLY AppointmentObserver — not a full "UserManager" god interface
+// NotificationDispatcher implements ONLY AppointmentObserver - not a full "UserManager" god interface
 ```
 
 ---
@@ -152,22 +152,22 @@ All service classes declare their dependencies through interfaces, injected at c
 
 **Application in our system:**
 
-- `AppointmentScheduler` depends on `IAvailabilityService`, `INotificationDispatcher`, `IPricingCalculator`, and `IAppointmentRepository` — all interfaces. The concrete implementations are injected externally.
-- `NotificationDispatcher` depends on `List<NotificationChannel>` — it does not know whether it is sending emails or SMS.
-- `PaymentProcessor` depends on `PaymentStrategy` — it does not know whether the user is paying by card or insurance.
-- `PricingCalculator` depends on `List<PricingStrategy>` — new discount rules can be injected without changing the calculator.
+- `AppointmentScheduler` depends on `IAvailabilityService`, `INotificationDispatcher`, `IPricingCalculator`, and `IAppointmentRepository` - all interfaces. The concrete implementations are injected externally.
+- `NotificationDispatcher` depends on `List<NotificationChannel>` - it does not know whether it is sending emails or SMS.
+- `PaymentProcessor` depends on `PaymentStrategy` - it does not know whether the user is paying by card or insurance.
+- `PricingCalculator` depends on `List<PricingStrategy>` - new discount rules can be injected without changing the calculator.
 
 This makes every high-level service fully **unit-testable** in isolation by injecting mock implementations.
 
 ```java
-// AppointmentScheduler constructor — all dependencies are abstractions
+// AppointmentScheduler constructor - all dependencies are abstractions
 public AppointmentScheduler(AvailabilityService availabilityService,
                             List<AppointmentObserver> defaultObservers) {
     this.availabilityService = availabilityService;  // could be a mock in tests
     this.defaultObservers = defaultObservers;        // could include a test spy
 }
 
-// NotificationDispatcher — does not know about Email or SMS concretely
+// NotificationDispatcher - does not know about Email or SMS concretely
 public class NotificationDispatcher implements AppointmentObserver {
     private final NotificationFactory factory;
     private final List<NotificationChannel> channels;  // injected: email, SMS, in-app
@@ -263,8 +263,8 @@ Classes with multiple unrelated responsibilities were split: for example, what c
 
 - Payment processing: instead of `if (method == "CARD") {...} else if (method == "INSURANCE") {...}`, the system calls `paymentStrategy.processPayment(amount)` on whatever concrete strategy is injected.
 - Notifications: `channel.send(recipient, message)` works for email, SMS, and in-app channels.
-- Pricing: `strategy.applyDiscount(price)` for insurance, percentage, or fixed discount — no branching.
-- Appointment states: `state.confirm()`, `state.cancel()`, `state.complete()` — each state handles its own valid transitions.
+- Pricing: `strategy.applyDiscount(price)` for insurance, percentage, or fixed discount - no branching.
+- Appointment states: `state.confirm()`, `state.cancel()`, `state.complete()` - each state handles its own valid transitions.
 
 ---
 
@@ -274,7 +274,7 @@ Classes with multiple unrelated responsibilities were split: for example, what c
 
 - `NotificationDispatcher`: not a real-world entity, fabricated to encapsulate routing logic.
 - `PricingCalculator`: not a domain concept; created to give the discount computation a clean home.
-- `AppointmentScheduler`: orchestrator, not a domain object — its role is to coordinate the booking workflow.
+- `AppointmentScheduler`: orchestrator, not a domain object - its role is to coordinate the booking workflow.
 - `NotificationFactory`: pure fabrication to centralize notification object creation.
 
 ---
@@ -311,7 +311,7 @@ InsurancePayment    implements PaymentStrategy
 DigitalWalletPayment implements PaymentStrategy
 ```
 
-`PaymentProcessor` holds a reference to a `PaymentStrategy`. At runtime, the patient's choice determines which concrete strategy is injected. Adding a new payment method (e.g., cryptocurrency) requires only a new class — `PaymentProcessor` is never modified.
+`PaymentProcessor` holds a reference to a `PaymentStrategy`. At runtime, the patient's choice determines which concrete strategy is injected. Adding a new payment method (e.g., cryptocurrency) requires only a new class - `PaymentProcessor` is never modified.
 
 #### Pricing Strategy
 
@@ -332,13 +332,13 @@ FixedDiscountStrategy        implements PricingStrategy
 **OCP benefit:** Adding `LoyaltyDiscount` in the future requires zero changes to existing classes.
 
 ```java
-// PricingStrategy.java — the stable abstraction
+// PricingStrategy.java - the stable abstraction
 public interface PricingStrategy {
     double applyDiscount(double basePrice);
     String getDescription();
 }
 
-// InsuranceDiscountStrategy.java — an extension, not a modification
+// InsuranceDiscountStrategy.java - an extension, not a modification
 public class InsuranceDiscountStrategy implements PricingStrategy {
     private final double coverageRate;
     public InsuranceDiscountStrategy(double coverageRate) { this.coverageRate = coverageRate; }
@@ -353,7 +353,7 @@ public class InsuranceDiscountStrategy implements PricingStrategy {
     }
 }
 
-// PricingCalculator.java — never changes when a new strategy is added
+// PricingCalculator.java - never changes when a new strategy is added
 public double computeFinalPrice(double basePrice) {
     double price = basePrice;
     for (PricingStrategy strategy : strategies) {   // just iterates the injected list
@@ -369,7 +369,7 @@ public double computeFinalPrice(double basePrice) {
 
 **Intent:** Define a one-to-many dependency so that when one object changes state, all its dependents are notified automatically.
 
-**Applied to: Appointment State Changes → Notifications**
+**Applied to: Appointment State Changes -> Notifications**
 
 The `Appointment` is the **subject** (observable). `NotificationDispatcher` is the **observer**. When an appointment transitions to `CONFIRMED`, `CANCELLED`, or `COMPLETED`, it notifies all registered observers.
 
@@ -391,7 +391,7 @@ Appointment (Subject)
 ```
 
 **Flow:**
-1. Patient books appointment → `Appointment.confirm()` is called.
+1. Patient books appointment -> `Appointment.confirm()` is called.
 2. `Appointment` calls `notifyObservers(new AppointmentEvent(CONFIRMED, this))`.
 3. `NotificationDispatcher.onAppointmentEvent(event)` receives the event.
 4. Dispatcher builds a `Notification` via `NotificationFactory` and routes it to the appropriate channels.
@@ -399,25 +399,25 @@ Appointment (Subject)
 **Code example:**
 
 ```java
-// Appointment.java — Subject
+// Appointment.java - Subject
 public void confirm() {
     state.confirm(this);  // delegates to ScheduledState or ConfirmedState
 }
 
-// ScheduledState.java — calls notifyObservers after transition
+// ScheduledState.java - calls notifyObservers after transition
 public void confirm(Appointment appointment) {
     appointment.setState(new ConfirmedState());
     appointment.notifyObservers(new AppointmentEvent(EventType.CONFIRMED, appointment));
 }
 
-// Appointment.java — notifies all registered observers
+// Appointment.java - notifies all registered observers
 public void notifyObservers(AppointmentEvent event) {
     for (AppointmentObserver observer : observers) {
         observer.onAppointmentEvent(event);
     }
 }
 
-// NotificationDispatcher.java — ConcreteObserver
+// NotificationDispatcher.java - ConcreteObserver
 @Override
 public void onAppointmentEvent(AppointmentEvent event) {
     switch (event.getType()) {
@@ -433,7 +433,7 @@ public void onAppointmentEvent(AppointmentEvent event) {
 }
 ```
 
-**Extensibility:** Adding an `AppointmentAuditLogger` (for audit trails) only requires implementing `AppointmentObserver` and subscribing it — no change to `Appointment` or `NotificationDispatcher`.
+**Extensibility:** Adding an `AppointmentAuditLogger` (for audit trails) only requires implementing `AppointmentObserver` and subscribing it - no change to `Appointment` or `NotificationDispatcher`.
 
 ---
 
@@ -443,7 +443,7 @@ public void onAppointmentEvent(AppointmentEvent event) {
 
 **Applied to: Appointment Lifecycle**
 
-An appointment progresses through: `SCHEDULED → CONFIRMED → COMPLETED | CANCELLED`.  
+An appointment progresses through: `SCHEDULED -> CONFIRMED -> COMPLETED | CANCELLED`.  
 Each state enforces which transitions are valid, preventing illegal operations (e.g., completing an already-cancelled appointment).
 
 ```
@@ -461,15 +461,15 @@ CancelledState    implements AppointmentState
 
 Each concrete state implements the valid transitions and throws `InvalidStateTransitionException` for invalid ones:
 
-- `ScheduledState.confirm()` → sets state to `ConfirmedState` ✅
-- `ScheduledState.complete()` → throws exception ❌
-- `CompletedState.cancel()` → throws exception ❌
-- `CancelledState.confirm()` → throws exception ❌
+- `ScheduledState.confirm()` -> sets state to `ConfirmedState` ✅
+- `ScheduledState.complete()` -> throws exception ❌
+- `CompletedState.cancel()` -> throws exception ❌
+- `CancelledState.confirm()` -> throws exception ❌
 
 This eliminates complex `if/switch` chains in `Appointment` and makes each state's logic self-contained and independently testable.
 
 ```java
-// AppointmentState.java — the interface each state implements
+// AppointmentState.java - the interface each state implements
 public interface AppointmentState {
     void confirm(Appointment appointment);
     void cancel(Appointment appointment);
@@ -477,7 +477,7 @@ public interface AppointmentState {
     String getStateName();
 }
 
-// ScheduledState.java — only confirm() and cancel() are valid
+// ScheduledState.java - only confirm() and cancel() are valid
 public class ScheduledState implements AppointmentState {
     @Override
     public void confirm(Appointment appointment) {
@@ -497,7 +497,7 @@ public class ScheduledState implements AppointmentState {
     public String getStateName() { return "SCHEDULED"; }
 }
 
-// CompletedState.java — terminal state, nothing is valid
+// CompletedState.java - terminal state, nothing is valid
 public class CompletedState implements AppointmentState {
     @Override
     public void cancel(Appointment appointment) {
@@ -530,10 +530,10 @@ Each factory method reads the involved user's `UserPreferences` to determine whi
 **Benefit:** `NotificationDispatcher` calls `factory.createConfirmationNotification(appointment)` without knowing anything about how notifications are constructed. Adding a new notification type (e.g., billing reminder) only requires a new factory method.
 
 ```java
-// NotificationFactory.java — centralised creation
+// NotificationFactory.java - centralised creation
 public Notification createConfirmationNotification(Appointment appointment) {
     Patient patient = appointment.getPatient();
-    String subject = "Appointment Confirmed — " + appointment.getService().getName();
+    String subject = "Appointment Confirmed - " + appointment.getService().getName();
     String body = String.format(
             "Dear %s, your appointment with Dr. %s for %s has been confirmed on %s.",
             patient.getName(), appointment.getDoctor().getName(),
@@ -541,7 +541,7 @@ public Notification createConfirmationNotification(Appointment appointment) {
     return new Notification(patient, subject, body);
 }
 
-// Consumer (NotificationDispatcher) — zero knowledge of Notification construction
+// Consumer (NotificationDispatcher) - zero knowledge of Notification construction
 dispatch(factory.createConfirmationNotification(appointment));
 ```
 
@@ -569,7 +569,7 @@ SystemConfigurationManager
 **Thread-safety note:** The implementation uses double-checked locking (or initialization-on-demand holder idiom in Java) to ensure thread-safe lazy instantiation.
 
 ```java
-// SystemConfigurationManager.java — Singleton via holder idiom (thread-safe, no synchronization)
+// SystemConfigurationManager.java - Singleton via holder idiom (thread-safe, no synchronization)
 public class SystemConfigurationManager {
 
     private static final class Holder {
@@ -588,7 +588,7 @@ public class SystemConfigurationManager {
     }
 }
 
-// Usage — anywhere in the codebase, always the same object
+// Usage - anywhere in the codebase, always the same object
 SystemConfigurationManager cfg = SystemConfigurationManager.getInstance();
 int duration = cfg.getInt("default.appointment.duration.minutes", 30);
 ```
@@ -613,7 +613,7 @@ int duration = cfg.getInt("default.appointment.duration.minutes", 30);
 | **Pure Fabrication** | NotificationDispatcher, PricingCalculator | Cohesive artificial helpers |
 | **Indirection** | NotificationDispatcher, Repository interfaces | Decoupled communication |
 | **Strategy** | PaymentStrategy, PricingStrategy | Interchangeable algorithms |
-| **Observer** | Appointment → NotificationDispatcher | Automatic event-driven notification |
+| **Observer** | Appointment -> NotificationDispatcher | Automatic event-driven notification |
 | **State** | AppointmentState hierarchy | Clean lifecycle management |
 | **Factory** | NotificationFactory | Centralized object construction |
 | **Singleton** | SystemConfigurationManager | Single system configuration source |

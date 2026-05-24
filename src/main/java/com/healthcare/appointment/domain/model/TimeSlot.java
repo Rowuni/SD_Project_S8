@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 /**
  * Represents a time slot with a start and end.
- * Value object — immutable by design.
+ * Value object - immutable by design.
  *
- * GRASP — Information Expert: Knows whether it overlaps with another slot.
+ * GRASP - Information Expert: Knows whether it overlaps with another slot.
  */
 public class TimeSlot {
 
@@ -21,8 +21,13 @@ public class TimeSlot {
         this.end = end;
     }
 
-    public LocalDateTime getStart() { return start; }
-    public LocalDateTime getEnd() { return end; }
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
 
     /**
      * Returns true if this slot overlaps with the given slot.
@@ -38,6 +43,6 @@ public class TimeSlot {
 
     @Override
     public String toString() {
-        return String.format("%s → %s", start, end);
+        return String.format("%s -> %s", start, end);
     }
 }

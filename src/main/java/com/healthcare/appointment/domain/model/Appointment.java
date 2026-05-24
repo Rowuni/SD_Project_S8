@@ -12,12 +12,16 @@ import java.util.UUID;
 /**
  * Core domain entity representing a medical appointment.
  *
- * DESIGN PATTERN — State: delegates all lifecycle transitions to the current AppointmentState.
- * DESIGN PATTERN — Observer (Subject): notifies registered observers on every state change.
+ * DESIGN PATTERN - State: delegates all lifecycle transitions to the current
+ * AppointmentState.
+ * DESIGN PATTERN - Observer (Subject): notifies registered observers on every
+ * state change.
  *
- * SOLID — SRP: Only holds appointment data and delegates transitions/notifications.
- * SOLID — OCP: New states are added without modifying this class.
- * GRASP — Information Expert: Knows its patient, doctor, service, slot and current state.
+ * SOLID - SRP: Only holds appointment data and delegates
+ * transitions/notifications.
+ * SOLID - OCP: New states are added without modifying this class.
+ * GRASP - Information Expert: Knows its patient, doctor, service, slot and
+ * current state.
  */
 public class Appointment {
 
@@ -36,7 +40,7 @@ public class Appointment {
         this.doctor = doctor;
         this.service = service;
         this.slot = slot;
-        this.state = new ScheduledState();  // initial state
+        this.state = new ScheduledState(); // initial state
     }
 
     // ── State Pattern delegation ──────────────────────────────────────────────
@@ -53,7 +57,7 @@ public class Appointment {
         state.complete(this);
     }
 
-    /** Called by state classes during transitions — package-accessible. */
+    /** Called by state classes during transitions - package-accessible. */
     public void setState(AppointmentState newState) {
         this.state = newState;
     }
@@ -72,7 +76,7 @@ public class Appointment {
         observers.remove(observer);
     }
 
-    /** Called by state classes — notifies all registered observers. */
+    /** Called by state classes - notifies all registered observers. */
     public void notifyObservers(AppointmentEvent event) {
         for (AppointmentObserver observer : observers) {
             observer.onAppointmentEvent(event);
@@ -81,15 +85,29 @@ public class Appointment {
 
     // ── Accessors ─────────────────────────────────────────────────────────────
 
-    public String getId() { return id; }
-    public Patient getPatient() { return patient; }
-    public Doctor getDoctor() { return doctor; }
-    public MedicalService getService() { return service; }
-    public TimeSlot getSlot() { return slot; }
+    public String getId() {
+        return id;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public MedicalService getService() {
+        return service;
+    }
+
+    public TimeSlot getSlot() {
+        return slot;
+    }
 
     @Override
     public String toString() {
-        return String.format("Appointment[%s] %s with Dr. %s — %s [%s]",
+        return String.format("Appointment[%s] %s with Dr. %s - %s [%s]",
                 id.substring(0, 8), service.getName(), doctor.getName(),
                 slot, state.getStateName());
     }

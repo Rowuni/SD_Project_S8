@@ -6,8 +6,8 @@ import com.healthcare.appointment.notification.Notification;
 /**
  * Simulates sending a notification via email.
  *
- * DESIGN PATTERN — Strategy / Observer (concrete observer channel)
- * SOLID — LSP: Can replace any NotificationChannel without side effects.
+ * DESIGN PATTERN - Strategy / Observer (concrete observer channel)
+ * SOLID - LSP: Can replace any NotificationChannel without side effects.
  */
 public class EmailNotificationChannel implements NotificationChannel {
 
@@ -19,5 +19,7 @@ public class EmailNotificationChannel implements NotificationChannel {
     }
 
     @Override
-    public String getChannelName() { return "EMAIL"; }
+    public String getChannelName() {
+        return "EMAIL";
+    }
 }

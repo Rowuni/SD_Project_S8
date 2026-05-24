@@ -1,5 +1,5 @@
 ---
-title: Sequence Diagram 1 — Book an Appointment
+title: Sequence Diagram 1 - Book an Appointment
 ---
 sequenceDiagram
     actor Patient
@@ -26,7 +26,7 @@ sequenceDiagram
 
     AppointmentScheduler->>Appointment: confirm()
     Appointment->>Appointment: state.confirm(this)
-    Note over Appointment: state → ConfirmedState
+    Note over Appointment: state -> ConfirmedState
     Appointment->>NotificationDispatcher: onAppointmentEvent(CONFIRMED, appointment)
 
     NotificationDispatcher->>NotificationFactory: createConfirmationNotification(appointment)
@@ -36,4 +36,4 @@ sequenceDiagram
     EmailNotificationChannel-->>NotificationDispatcher: ok
 
     AppointmentScheduler-->>AppointmentController: Appointment (CONFIRMED)
-    AppointmentController-->>Patient: 201 Created — Appointment confirmed
+    AppointmentController-->>Patient: 201 Created - Appointment confirmed

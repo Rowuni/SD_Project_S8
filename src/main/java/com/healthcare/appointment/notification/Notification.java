@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Represents a notification message to be sent to a user.
  *
- * SOLID — SRP: Only carries notification content data.
+ * SOLID - SRP: Only carries notification content data.
  */
 public class Notification {
 
@@ -25,11 +25,25 @@ public class Notification {
         this.createdAt = LocalDateTime.now();
     }
 
-    public String getId() { return id; }
-    public User getRecipient() { return recipient; }
-    public String getSubject() { return subject; }
-    public String getBody() { return body; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getId() {
+        return id;
+    }
+
+    public User getRecipient() {
+        return recipient;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     @Override
     public String toString() {

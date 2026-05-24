@@ -1,5 +1,5 @@
 ---
-title: Sequence Diagram 2 — Cancel an Appointment
+title: Sequence Diagram 2 - Cancel an Appointment
 ---
 sequenceDiagram
     actor Requester as Patient / Doctor
@@ -20,7 +20,7 @@ sequenceDiagram
 
     AppointmentScheduler->>Appointment: cancel()
     Appointment->>Appointment: state.cancel(this)
-    Note over Appointment: state → CancelledState
+    Note over Appointment: state -> CancelledState
 
     Appointment->>NotificationDispatcher: onAppointmentEvent(CANCELLED, appointment)
 
@@ -37,4 +37,4 @@ sequenceDiagram
     AvailabilityService-->>AppointmentScheduler: slot released
 
     AppointmentScheduler-->>AppointmentController: void
-    AppointmentController-->>Requester: 200 OK — Appointment cancelled
+    AppointmentController-->>Requester: 200 OK - Appointment cancelled
